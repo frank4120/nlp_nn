@@ -16,8 +16,8 @@ class Network:
 
         # create embeddings for words and tag features.
         self.word_embedding = self.model.add_lookup_parameters((vocab.num_words(), properties.word_embed_dim))
-        self.tag_embedding = self.model.add_lookup_parameters((vocab.num_tag_feats(), properties.pos_embed_dim))
-        # dep embeddings
+        self.tag_embedding = self.model.add_lookup_parameters((vocab.num_tags(), properties.pos_embed_dim))
+        self.dep_embedding = self.model.add_lookup_parameters((vocab.num_dep(), properties.dep_embed_dim))
 
         # assign transfer function
         self.transfer = dynet.rectify  # can be dynet.logistic or dynet.tanh as well.
@@ -25,38 +25,48 @@ class Network:
         # define the input dimension for the embedding layer.
         # here we assume to see two words after and before and current word (meaning 5 word embeddings)
         # and to see the last two predicted tags (meaning two tag embeddings)
-        self.input_dim = 5 * properties.word_embed_dim + 2 * properties.pos_embed_dim
+        self.input_dim = 20 * properties.word_embed_dim + 20 * properties.pos_embed_dim + 12 * properties.dep_embed_dim
 
-        # define the hidden layer.
-        self.hidden_layer = self.model.add_parameters((properties.hidden_dim, self.input_dim))
+        # define the first hidden layer.
+        self.hidden_layer1 = self.model.add_parameters((properties.hidden_dim, self.input_dim))
 
-        # define the hidden layer bias term and initialize it as constant 0.2.
-        self.hidden_layer_bias = self.model.add_parameters(properties.hidden_dim, init=dynet.ConstInitializer(0.2))
+        # define the first hidden layer bias term and initialize it as constant 0.2.
+        self.hidden_layer_bias1 = self.model.add_parameters(properties.hidden_dim, init=dynet.ConstInitializer(0.2))
+
+        # define the second hidden layer.
+        self.hidden_layer2 = self.model.add_parameters((properties.hidden_dim, properties.hidden_dim))
+
+        # define the second hidden layer bias term and initialize it as constant 0.2.
+        self.hidden_layer_bias2 = self.model.add_parameters(properties.hidden_dim, init=dynet.ConstInitializer(0.2))
 
         # define the output weight.
-        self.output_layer = self.model.add_parameters((vocab.num_tags(), properties.hidden_dim))
+        self.output_layer = self.model.add_parameters((vocab.num_actions(), properties.hidden_dim))
 
         # define the bias vector and initialize it as zero.
-        self.output_bias = self.model.add_parameters(vocab.num_tags(), init=dynet.ConstInitializer(0))
+        self.output_bias = self.model.add_parameters(vocab.num_actions(), init=dynet.ConstInitializer(0))
 
     def build_graph(self, features):
         # extract word and tags ids
-        word_ids = [self.vocab.word2id(word_feat) for word_feat in features[0:5]]
-        tag_ids = [self.vocab.feat_tag2id(tag_feat) for tag_feat in features[5:]]
+        word_ids = [self.vocab.word2id(word_feat) for word_feat in features[0:20]]
+        tag_ids = [self.vocab.tag2id(tag_feat) for tag_feat in features[20:40]]
+        dep_ids = [self.vocab.dep2id(tag_feat) for tag_feat in features[40:]]
 
         # extract word embeddings and tag embeddings from features
         word_embeds = [self.word_embedding[wid] for wid in word_ids]
         tag_embeds = [self.tag_embedding[tid] for tid in tag_ids]
+        dep_embeds = [self.dep_embedding[tid] for tid in dep_ids]
 
         # concatenating all features (recall that '+' for lists is equivalent to appending two lists)
-        embedding_layer = dynet.concatenate(word_embeds + tag_embeds)
+        embedding_layer = dynet.concatenate(word_embeds + tag_embeds + dep_embeds)
 
         # calculating the hidden layer
         # .expr() converts a parameter to a matrix expression in dynet (its a dynet-specific syntax).
-        hidden = self.transfer(self.hidden_layer.expr() * embedding_layer + self.hidden_layer_bias.expr())
+        hidden1 = self.transfer(self.hidden_layer1.expr() * embedding_layer + self.hidden_layer_bias1.expr())
+        hidden2 = self.transfer(self.hidden_layer2.expr() * hidden1 + self.hidden_layer_bias2.expr())
+
 
         # calculating the output layer
-        output = self.output_layer.expr() * hidden + self.output_bias.expr()
+        output = self.output_layer.expr() * hidden2 + self.output_bias.expr()
 
         # return the output as a dynet vector (expression)
         return output
@@ -82,9 +92,10 @@ class Network:
 
             step = 0
             for line in train_data:
-                fields = line.strip().split('\t')
+
+                fields = line.strip().split()
                 features, label = fields[:-1], fields[-1]
-                gold_label = self.vocab.tag2id(label)
+                gold_label = self.vocab.action2id(label)
                 result = self.build_graph(features)
 
                 # getting loss with respect to negative log softmax function and the gold label.

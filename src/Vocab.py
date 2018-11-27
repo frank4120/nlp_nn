@@ -1,50 +1,61 @@
 from collections import defaultdict
 
-
 class Vocab:
-    def __init__(self, data_path):
-        sentences = open(data_path, 'r').read().strip().split('\n\n')
+    def __init__(self):
+        # Creating actions dictionary
+        aFile = open('../data/vocabs.actions', 'r')
+        self.action_dict = defaultdict(int)
 
-        # first read into counts
-        word_count, tags = defaultdict(int), set()
-        for sentence in sentences:
-            lines = sentence.strip().split('\n')
-            for line in lines:
-                word, tag = line.strip().split('\t')
-                word_count[word] += 1
-                tags.add(tag)
-        tags = list(tags)
-        words = [word for word in word_count.keys() if word_count[word] > 1]
+        for line in aFile:
+            pair = line.split()
+            self.action_dict[pair[0]] = int(pair[1])
 
-        # Including unknown as the first features. <s> and </s> are for start and end of sentence.
-        self.words = ['<UNK>', '<s>', '</s>'] + words
-        self.word_dict = {word: i for i, word in enumerate(self.words)}
+        # Creating label dictionary
+        lFile = open('../data/vocabs.labels', 'r')
+        self.label_dict = defaultdict(int)
 
-        self.output_tags = tags
-        self.output_tag_dict = {tag: i for i, tag in enumerate(self.output_tags)}
+        for line in lFile:
+            pair = line.split()
+            self.label_dict[pair[0]] = int(pair[1])
 
-        # <s> is for start and end of sentence. This is because we are only using the previous tag. In some cases
-        # the previous tag can be the start of sentence.
-        self.feat_tags = ['<s>'] + tags
-        self.feat_tags_dict = {tag: i for i, tag in enumerate(self.feat_tags)}
+        # Creating POS dictionary
+        pFile = open('../data/vocabs.pos', 'r')
+        self.pos_dict = defaultdict(int)
 
-    def tagid2tag_str(self, id):
-        return self.output_tags[id]
+        for line in pFile:
+            pair = line.split()
+            self.pos_dict[pair[0]] = int(pair[1])
+
+        # Creating word dictionary
+        wFile = open('../data/vocabs.word', 'r')
+        self.word_dict = defaultdict(int)
+
+        for line in wFile:
+            pair = line.split()
+            self.word_dict[pair[0]] = int(pair[1])
 
     def tag2id(self, tag):
-        return self.output_tag_dict[tag]
+        return self.pos_dict[tag]
 
-    def feat_tag2id(self, tag):
-        return self.feat_tags_dict[tag]
+    def dep2id(self, tag):
+        return self.label_dict[tag]
+
+    def action2id(self, tag):
+        return self.action_dict[tag]
 
     def word2id(self, word):
         return self.word_dict[word] if word in self.word_dict else self.word_dict['<UNK>']
 
     def num_words(self):
-        return len(self.words)
+        return 4807
 
-    def num_tag_feats(self):
-        return len(self.feat_tags)
+    def num_dep(self):
+        return 46
 
     def num_tags(self):
-        return len(self.output_tags)
+        return 45
+
+    def num_actions(self):
+        return 93
+
+Vocab()
