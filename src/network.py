@@ -29,13 +29,15 @@ class Network:
 
         # define the first hidden layer.
         self.hidden_layer1 = self.model.add_parameters((properties.hidden_dim, self.input_dim))
+        
+	#dynet.dropout(self.hidden_layer1, 0.3)
 
         # define the first hidden layer bias term and initialize it as constant 0.2.
         self.hidden_layer_bias1 = self.model.add_parameters(properties.hidden_dim, init=dynet.ConstInitializer(0.2))
 
         # define the second hidden layer.
         self.hidden_layer2 = self.model.add_parameters((properties.hidden_dim, properties.hidden_dim))
-
+	
         # define the second hidden layer bias term and initialize it as constant 0.2.
         self.hidden_layer_bias2 = self.model.add_parameters(properties.hidden_dim, init=dynet.ConstInitializer(0.2))
 
@@ -62,8 +64,11 @@ class Network:
         # calculating the hidden layer
         # .expr() converts a parameter to a matrix expression in dynet (its a dynet-specific syntax).
         hidden1 = self.transfer(self.hidden_layer1 * embedding_layer + self.hidden_layer_bias1)
-        hidden2 = self.transfer(self.hidden_layer2 * hidden1 + self.hidden_layer_bias2)
-
+        dropout1 = dynet.dropout(hidden1, 0.1)
+        hidden2 = self.transfer(self.hidden_layer2 * dropout1 + self.hidden_layer_bias2)
+	
+	# To implement network without dropout, remove the line with dropout1 and change hidden2 to:
+	# hidden2 = self.transfer(self.hidden_layer2 * hidden1 + self.hidden_layer_bias2)
 
         # calculating the output layer
         output = self.output_layer * hidden2 + self.output_bias

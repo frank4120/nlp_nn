@@ -19,15 +19,20 @@ class DepModel:
 
         parser = OptionParser()
         parser.add_option("--train", dest="train_file", metavar="FILE", default=None)
-        parser.add_option("--train_data", dest="train_data_file", metavar="FILE", default='../data/train.data')
+        parser.add_option("--train_data", dest="train_data_file", metavar="FILE", default='data/train.data')
         parser.add_option("--test", dest="test_file", metavar="FILE", default=None)
         parser.add_option("--output", dest="output_file", metavar="FILE", default=None)
-        parser.add_option("--model", dest="model_path", metavar="FILE", default='trained2.model')
+        parser.add_option("--model", dest="model_path", metavar="FILE", default='src/trained3.model')
+        # This option changes to trained2.model for part 2 as we are saving each model seperately per part 
+	# (similarly use trained3.model for part 3)
+	# parser.add_option("--model", dest="model_path", metavar="FILE", default='src/trained2.model')
         parser.add_option("--vocab", dest="vocab_path", metavar="FILE", default=None)
         parser.add_option("--we", type="int", dest="we", default=64)
         parser.add_option("--pe", type="int", dest="pe", default=32)
         parser.add_option("--de", type="int", dest="de", default=32)
-        parser.add_option("--hidden", type="int", dest="hidden", default=400)
+        parser.add_option("--hidden", type="int", dest="hidden", default=200)
+	# This option changes to 400 for Part 2
+	# parser.add_option("--hidden", type="int", dest="hidden", default=400)
         parser.add_option("--minibatch", type="int", dest="minibatch", default=1000)
         parser.add_option("--epochs", type="int", dest="epochs", default=7)
 
@@ -54,31 +59,6 @@ class DepModel:
             self.network.save(options.model_path)
 
 
-            # writer = open(options.output_file, 'w')
-            # for sentence in open(options.test_file, 'r'):
-            #     words = sentence.strip().split()
-            #     tags = network.decode(words)
-            #     output = [word + '\t' + tag for word, tag in zip(words, tags)]
-            #     writer.write('\n'.join(output) + '\n\n')
-            # writer.close()
-
-        # # Create vocabulary object (dictionaries of vocab file data)
-        # vocab = Vocab()
-        #
-        # # constructing network
-        # network = Network(vocab, net_properties)
-        #
-        # if os.path.isfile('trained.model'):
-        #     # load stored trained model
-        #     network.load('trained.model')
-        # else:
-        #     # train network for given epochs
-        #     network.train('../data/train.data', epochs)
-        #
-        # # saving network
-        # network.save('trained.model')
-
-
     def score(self, str_features):
         '''
         :param str_features: String features
@@ -96,9 +76,7 @@ if __name__=='__main__':
 
     m = DepModel()
 
-    # input_p = os.path.abspath(sys.argv[1])
-    # output_p = os.path.abspath(sys.argv[2])
-    input_p = os.path.abspath('../trees/test.conll')
-    output_p = os.path.abspath('../outputs/test_part2.conll')
+    input_p = os.path.abspath(sys.argv[1])
+    output_p = os.path.abspath(sys.argv[2])
 
     Decoder(m.score, m.actions).parse(input_p, output_p)

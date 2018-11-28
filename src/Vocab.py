@@ -3,7 +3,7 @@ from collections import defaultdict
 class Vocab:
     def __init__(self):
         # Creating actions dictionary
-        aFile = open('../data/vocabs.actions', 'r')
+        aFile = open('data/vocabs.actions', 'r')
         self.action_dict = defaultdict(int)
 
         for line in aFile:
@@ -11,7 +11,7 @@ class Vocab:
             self.action_dict[pair[0]] = int(pair[1])
 
         # Creating label dictionary
-        lFile = open('../data/vocabs.labels', 'r')
+        lFile = open('data/vocabs.labels', 'r')
         self.label_dict = defaultdict(int)
 
         for line in lFile:
@@ -19,7 +19,7 @@ class Vocab:
             self.label_dict[pair[0]] = int(pair[1])
 
         # Creating POS dictionary
-        pFile = open('../data/vocabs.pos', 'r')
+        pFile = open('data/vocabs.pos', 'r')
         self.pos_dict = defaultdict(int)
 
         for line in pFile:
@@ -27,7 +27,7 @@ class Vocab:
             self.pos_dict[pair[0]] = int(pair[1])
 
         # Creating word dictionary
-        wFile = open('../data/vocabs.word', 'r')
+        wFile = open('data/vocabs.word', 'r')
         self.word_dict = defaultdict(int)
 
         for line in wFile:
@@ -47,15 +47,15 @@ class Vocab:
         return self.word_dict[word] if word in self.word_dict else self.word_dict['<UNK>']
 
     def num_words(self):
-        return 4807
+        return len(self.word_dict)
 
     def num_dep(self):
-        return 46
+        return len(self.label_dict)
 
     def num_tags(self):
-        return 45
+        return len(self.pos_dict)
 
     def num_actions(self):
-        return 93
+        return len(self.action_dict)
 
 Vocab()
