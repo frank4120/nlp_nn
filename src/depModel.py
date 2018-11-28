@@ -22,12 +22,12 @@ class DepModel:
         parser.add_option("--train_data", dest="train_data_file", metavar="FILE", default='../data/train.data')
         parser.add_option("--test", dest="test_file", metavar="FILE", default=None)
         parser.add_option("--output", dest="output_file", metavar="FILE", default=None)
-        parser.add_option("--model", dest="model_path", metavar="FILE", default='trained.model')
+        parser.add_option("--model", dest="model_path", metavar="FILE", default='trained2.model')
         parser.add_option("--vocab", dest="vocab_path", metavar="FILE", default=None)
         parser.add_option("--we", type="int", dest="we", default=64)
         parser.add_option("--pe", type="int", dest="pe", default=32)
         parser.add_option("--de", type="int", dest="de", default=32)
-        parser.add_option("--hidden", type="int", dest="hidden", default=200)
+        parser.add_option("--hidden", type="int", dest="hidden", default=400)
         parser.add_option("--minibatch", type="int", dest="minibatch", default=1000)
         parser.add_option("--epochs", type="int", dest="epochs", default=7)
 
@@ -98,7 +98,7 @@ if __name__=='__main__':
 
     # input_p = os.path.abspath(sys.argv[1])
     # output_p = os.path.abspath(sys.argv[2])
-    input_p = os.path.abspath('../trees/dev.conll')
-    output_p = os.path.abspath('../outputs/dev_part1.conll')
+    input_p = os.path.abspath('../trees/test.conll')
+    output_p = os.path.abspath('../outputs/test_part2.conll')
 
     Decoder(m.score, m.actions).parse(input_p, output_p)
