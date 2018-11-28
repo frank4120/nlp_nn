@@ -33,38 +33,26 @@ class DepModel:
 
         (options, args) = parser.parse_args()
 
-        #if options.train_file and options.train_data_file and options.model_path:
-        #if options.train_data_file and options.model_path and False:
-            #net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
-
-            # creating vocabulary file
-            #vocab = Vocab()
-
-            # writing properties and vocabulary file into pickle
-            # pickle.dump((vocab, net_properties), open(options.vocab_path, 'w'))
-
-            # constructing network
-            #self.network = Network(vocab, net_properties)
-
-            # training
-            #self.network.train(options.train_data_file, options.epochs)
-
-            # saving network
-            #self.network.save(options.model_path)
-
-        #if options.test_file and options.model_path:
-            # loading vocab and net properties
-            # vocab, net_properties = pickle.load(open(options.vocab_path, 'r'))
-
-        print("Loading saved model")
-        vocab = Vocab()
         net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
 
-            # constructing default network
+        # creating vocabulary file
+        vocab = Vocab()
+
+        # constructing network
         self.network = Network(vocab, net_properties)
 
+        if os.path.isfile(options.model_path):
+            print("Loading saved model")
             # loading network trained model
-        self.network.load(options.model_path)
+            self.network.load(options.model_path)
+        else:
+            print("Training model")
+            # training
+            self.network.train(options.train_data_file, options.epochs)
+
+            # saving network
+            self.network.save(options.model_path)
+
 
             # writer = open(options.output_file, 'w')
             # for sentence in open(options.test_file, 'r'):
