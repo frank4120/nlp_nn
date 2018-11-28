@@ -34,37 +34,37 @@ class DepModel:
         (options, args) = parser.parse_args()
 
         #if options.train_file and options.train_data_file and options.model_path:
-        if options.train_data_file and options.model_path and False:
-            net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
+        #if options.train_data_file and options.model_path and False:
+            #net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
 
             # creating vocabulary file
-            vocab = Vocab()
+            #vocab = Vocab()
 
             # writing properties and vocabulary file into pickle
             # pickle.dump((vocab, net_properties), open(options.vocab_path, 'w'))
 
             # constructing network
-            network = Network(vocab, net_properties)
+            #self.network = Network(vocab, net_properties)
 
             # training
-            network.train(options.train_data_file, options.epochs)
+            #self.network.train(options.train_data_file, options.epochs)
 
             # saving network
-            network.save(options.model_path)
+            #self.network.save(options.model_path)
 
-        if options.test_file and options.model_path:
+        #if options.test_file and options.model_path:
             # loading vocab and net properties
             # vocab, net_properties = pickle.load(open(options.vocab_path, 'r'))
 
-            print("Loading saved model")
-            vocab = Vocab()
-            net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
+        print("Loading saved model")
+        vocab = Vocab()
+        net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
 
             # constructing default network
-            network = Network(vocab, net_properties)
+        self.network = Network(vocab, net_properties)
 
             # loading network trained model
-            network.load(options.model_path)
+        self.network.load(options.model_path)
 
             # writer = open(options.output_file, 'w')
             # for sentence in open(options.test_file, 'r'):
@@ -111,6 +111,6 @@ if __name__=='__main__':
     # input_p = os.path.abspath(sys.argv[1])
     # output_p = os.path.abspath(sys.argv[2])
     input_p = os.path.abspath('../trees/dev.conll')
-    output_p = os.path.abspath('../trees/dev_part1.conll')
+    output_p = os.path.abspath('../outputs/dev_part1.conll')
 
     Decoder(m.score, m.actions).parse(input_p, output_p)

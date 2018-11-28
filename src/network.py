@@ -61,12 +61,12 @@ class Network:
 
         # calculating the hidden layer
         # .expr() converts a parameter to a matrix expression in dynet (its a dynet-specific syntax).
-        hidden1 = self.transfer(self.hidden_layer1.expr() * embedding_layer + self.hidden_layer_bias1.expr())
-        hidden2 = self.transfer(self.hidden_layer2.expr() * hidden1 + self.hidden_layer_bias2.expr())
+        hidden1 = self.transfer(self.hidden_layer1 * embedding_layer + self.hidden_layer_bias1)
+        hidden2 = self.transfer(self.hidden_layer2 * hidden1 + self.hidden_layer_bias2)
 
 
         # calculating the output layer
-        output = self.output_layer.expr() * hidden2 + self.output_bias.expr()
+        output = self.output_layer * hidden2 + self.output_bias
 
         # return the output as a dynet vector (expression)
         return output
