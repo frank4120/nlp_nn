@@ -34,7 +34,7 @@ class DepModel:
         (options, args) = parser.parse_args()
 
         #if options.train_file and options.train_data_file and options.model_path:
-        if options.train_data_file and options.model_path:
+        if options.train_data_file and options.model_path and False:
             net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
 
             # creating vocabulary file
@@ -52,10 +52,11 @@ class DepModel:
             # saving network
             network.save(options.model_path)
 
-        if options.test_file and options.model_path and options.output_file:
+        if options.test_file and options.model_path:
             # loading vocab and net properties
             # vocab, net_properties = pickle.load(open(options.vocab_path, 'r'))
 
+            print("Loading saved model")
             vocab = Vocab()
             net_properties = NetProperties(options.we, options.pe, options.de, options.hidden, options.minibatch)
 
@@ -107,6 +108,9 @@ if __name__=='__main__':
 
     m = DepModel()
 
-    input_p = os.path.abspath(sys.argv[1])
-    output_p = os.path.abspath(sys.argv[2])
+    # input_p = os.path.abspath(sys.argv[1])
+    # output_p = os.path.abspath(sys.argv[2])
+    input_p = os.path.abspath('../trees/dev.conll')
+    output_p = os.path.abspath('../trees/dev_part1.conll')
+
     Decoder(m.score, m.actions).parse(input_p, output_p)
