@@ -25,7 +25,7 @@ class DependencyToken:
 
 def traverse(rev_head, h, visited):
     # if h in rev_head
-    if rev_head.has_key(h):
+    if h in rev_head:
         for d in rev_head[h]:
             if d in visited:
                 return True
@@ -56,7 +56,7 @@ def is_projective(heads):
     for dep1 in range(1, len(heads) + 1):
         head1 = heads[dep1 - 1]
 
-        if rev_head.has_key(dep1):
+        if dep1 in rev_head:
             for d2 in rev_head[dep1]:
                 if (d2 < head1 < dep1) or (d2 > head1 > dep1) and head1 > 0:
                     return False

@@ -83,7 +83,7 @@ class Network:
         plt.ylabel("Loss")
 
         for i in range(epochs):
-            print 'started epoch', (i+1)
+            print('started epoch', (i+1))
             losses = []
             train_data = open(train_file, 'r').read().strip().split('\n')
 
@@ -123,7 +123,7 @@ class Network:
                         plt.draw()
                         plt.pause(0.0001)
                         progress = round(100 * float(step) / len(train_data), 2)
-                        print 'current minibatch loss', minibatch_loss_value, 'progress:', progress, '%'
+                        print('current minibatch loss', minibatch_loss_value, 'progress:', progress, '%')
 
                     # calling dynet to run backpropagation
                     minibatch_loss.backward()
